@@ -17,6 +17,7 @@ const StageLayering = require('./stage-layering');
 const Variable = require('./variable');
 const xmlEscape = require('../util/xml-escape');
 const ScratchLinkWebSocket = require('../util/scratch-link-websocket');
+const getMonitorIdForBlockWithArgs = require('../util/get-monitor-id');
 
 // Virtual I/O devices.
 const Clock = require('../io/clock');
@@ -40,6 +41,7 @@ const defaultBlockPackages = {
     scratch3_sensing: require('../blocks/scratch3_sensing'),
     scratch3_data: require('../blocks/scratch3_data'),
     scratch3_procedures: require('../blocks/scratch3_procedures')
+    //scratch3_phidget22: require('../extensions/scratch3_phidgets/index') //attempt to load extension on startup...
 };
 
 const defaultExtensionColors = ['#0FBD8C', '#0DA57A', '#0B8E69'];
@@ -177,7 +179,7 @@ let rendererDrawProfilerId = -1;
 class Runtime extends EventEmitter {
     constructor () {
         super();
-
+        
         /**
          * Target management and storage.
          * @type {Array.<!Target>}
@@ -1167,9 +1169,10 @@ class Runtime extends EventEmitter {
         }
 
         if (blockInfo.blockType === BlockType.REPORTER) {
-            if (!blockInfo.disableMonitor && context.inputList.length === 0) {
-                blockJSON.checkboxInFlyout = true;
-            }
+            blockJSON.checkboxInFlyout = true;
+            // if (!blockInfo.disableMonitor && context.inputList.length === 0) {
+            //     blockJSON.checkboxInFlyout = true;
+            // }
         } else if (blockInfo.blockType === BlockType.LOOP) {
             // Add icon to the bottom right of a loop block
             blockJSON[`lastDummyAlign${outLineNum}`] = 'RIGHT';
@@ -2477,7 +2480,7 @@ class Runtime extends EventEmitter {
 
         const block = categoryInfo.blocks.find(b => b.info.opcode === opcode);
         if (!block) return;
-
+        
         // TODO: we may want to format the label in a locale-specific way.
         return {
             category: 'extension', // This assumes that all extensions have the same monitor color.

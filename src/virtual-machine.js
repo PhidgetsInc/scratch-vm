@@ -24,6 +24,7 @@ const {loadCostume} = require('./import/load-costume.js');
 const {loadSound} = require('./import/load-sound.js');
 const {serializeSounds, serializeCostumes} = require('./serialization/serialize-assets');
 require('canvas-toBlob');
+const $ = require('jquery');
 
 const RESERVED_NAMES = ['_mouse_', '_stage_', '_edge_', '_myself_', '_random_'];
 
@@ -47,6 +48,9 @@ class VirtualMachine extends EventEmitter {
     constructor () {
         super();
 
+        $.getScript('./phidget22.min.js');
+        $.getScript('./sha256.min.js');
+       console.log('loading phid22 scripts');
         /**
          * VM runtime, to store blocks, I/O devices, sprites/targets, etc.
          * @type {!Runtime}

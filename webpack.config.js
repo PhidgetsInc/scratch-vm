@@ -45,7 +45,9 @@ module.exports = [
         target: 'web',
         entry: {
             'scratch-vm': './src/index.js',
-            'scratch-vm.min': './src/index.js'
+            'scratch-vm.min': './src/index.js',
+            'phidget22.min': './src/phidget22.min.js',
+            'sha256.min': './src/shaw256.min.js'
         },
         output: {
             libraryTarget: 'umd',
@@ -80,7 +82,8 @@ module.exports = [
             'nets': true,
             'scratch-parser': true,
             'socket.io-client': true,
-            'text-encoding': true
+            'text-encoding': true,
+            'phidget22': true
         }
     }),
     // Playground
