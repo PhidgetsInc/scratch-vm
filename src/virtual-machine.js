@@ -48,9 +48,19 @@ class VirtualMachine extends EventEmitter {
     constructor () {
         super();
 
-        $.getScript('./phidget22.min.js');
-        $.getScript('./sha256.min.js');
-       console.log('loading phid22 scripts');
+        //$.getScript('./static/phidget22.min.js');
+       // $.getScript('./static/sha256.min.js');
+        //console.log('loading phid22 scripts');        
+        const script = document.createElement('script');
+        script.src = 'static/phidget22.min.js';
+        script.type = 'text/javascript';
+        document.body.appendChild(script);
+
+        const script2 = document.createElement('script');
+        script2.src = 'static/sha256.min.js';
+        script2.type = 'text/javascript';
+        document.body.appendChild(script2);
+        
         /**
          * VM runtime, to store blocks, I/O devices, sprites/targets, etc.
          * @type {!Runtime}

@@ -29,13 +29,13 @@ class Phidget{
     }
 
     open(timeout){
-        console.log('open with timeout');
         this.dev.open(timeout).catch(function(){
             console.log('Device did not open within timeout');
         })
     }
 
     close(){
+        console.log("Closing " + this.dev.name);
         this.dev.close();
     }
 }
@@ -369,30 +369,10 @@ class Thumbstick extends Phidget{
         this.dev[0] = new VoltageRatioInput(runtime, this.serialNumber, this.hubPort, 0);
         this.dev[1] = new VoltageRatioInput(runtime, this.serialNumber, this.hubPort, 1);
         this.dev[2] = new DigitalInput(runtime, this.serialNumber, this.hubPort, 0);
-
-        this.onAttach = this._onAttach;
-        this.onAttach = this._onAttach;
-        this.onAttach = this._onAttach;
-        this.onDetach = this._onDetach;
-        this.onDetach = this._onDetach;
-        this.onDetach = this._onDetach;
-
-
-        this._devConnected = 0;
-    }
-
-    _onAttach(){
-        this._devConncted++;
-        if(_devConnected === 3)
-            console.log("Thumbstick Attached!");
-    }
-    _onDetach(){
-        this._devConnected--;
-        if(_devConnected !== 3)
-            console.log("Thumbstick component Detached!");
     }
 
     open(){
+        console.log("Opening Thumbstick components");
         this.dev[0].open();
         this.dev[1].open();
         this.dev[2].open();
@@ -408,8 +388,42 @@ class Thumbstick extends Phidget{
         data[1] = this.dev[1].getVoltageRatio();
         data[2] = this.dev[2].getState();
 
-        return data;
+        return [
+            this.dev[0].getVoltageRatio(),
+            this.dev[1].getVoltageRatio(),
+            this.dev[2].getState() 
+        ];
     }
+
+    close(){
+        console.log("Closing Thumbstick components");
+        this.dev[0].close();
+        this.dev[1].close();
+        this.dev[2].close();
+    }
+}
+
+class RFID extends Phidget{
+    constructor(runtime, serialnumber){
+        super(runtime);
+
+        this.dev = new phidget22.RFID();
+        this.dev.setDeviceSerialNumber(serialnumber === 'any' ? -1 : parseInt(serialnumber));
+        this.dev.onAttach = this._onAttach;
+    }
+
+    _onTag(tag, protocol){
+        console.log('tag: ' + tag + ' protocol: ' + protocol);
+    }
+
+    getLastTag(){
+        return this.dev.data.lastTagString;
+    }
+
+    getTagPresent(){
+        return this.dev.data.tagPresent;
+    }
+
 }
 
 class Scratch3Phidget22Blocks{
@@ -419,11 +433,12 @@ class Scratch3Phidget22Blocks{
         this.availableDevices = [];
         this.connectedDevices = [];
         this.connectedCompositeDevices = [];
-        this.newDevice;
+        this.newDevice;        
         
         var conn_opts = { name: "PhidgetServer", passwd: "",  onConnect: this._onConnect };
 
-        this.phid22conn = new phidget22.Connection(8989, "localhost", conn_opts );
+        var port = (window.location.port === '' || window.location.port === '8601') ? 8989 : parseInt(window.location.port);
+        this.phid22conn = new phidget22.Connection(port, window.location.hostname, conn_opts );
 
         this.phid22conn.connect().then(function(){
             return true;
@@ -447,7 +462,8 @@ class Scratch3Phidget22Blocks{
             }.bind(this)
         });
 
-        this.phidmanager.open();
+        this.phidmanager.open();        
+        this.runtime.on('PROJECT_STOP_ALL', this.closeAllPhidgets.bind(this));
     };
     
 
@@ -604,6 +620,11 @@ class Scratch3Phidget22Blocks{
                             menu: 'menuThumbstick'
                         }
                     }
+                },
+                {
+                    opcode: 'basicRFID',
+                    blockType: BlockType.REPORTER,
+                    text: 'RFID Tag'
                 },
                 '---',
                 '---',
@@ -964,7 +985,7 @@ class Scratch3Phidget22Blocks{
                 },
                 // {
                 //     opcode: 'onStateChange',
-                //     blockType: BlockType.EVENT,
+                //     blockType: BlockType.EVENT,      //currently no documentation on how to use/define this block type
                 //     text: 'DigitalInput Event SN: [SERIALNUMBER] Port: [PORT]',
                 //     arguments:{
                 //         SERIALNUMBER: {
@@ -978,21 +999,6 @@ class Scratch3Phidget22Blocks{
                 //             menu: 'menuHubPort'
                 //         }
                 //     }
-                // },
-                // {
-                //     opcode: 'example-conditional',
-                //     blockType: BlockType.CONDITIONAL,
-                //     branchCount: 2,
-                //     isTerminal: true,
-                //     blockAllThreads: false,
-                //     text: 'choose [BRANCH]',
-                //     arguments: {
-                //         BRANCH: {
-                //             type: ArgumentType.BOOLEAN,
-                //             defaultValue: true
-                //         }
-                //     },
-                //     func: 'noop'
                 // },
             //     {
             //         // Required: the machine-readable name of this operation.
@@ -1126,7 +1132,11 @@ class Scratch3Phidget22Blocks{
         const serialnumber = (args.SERIALNUMBER === 'any' ? -1 : parseInt(args.SERIALNUMBER));
         const port = (args.PORT === 'any' ? -1 : parseInt(args.PORT));
         const channel = (args.CHANNEL === 'any' ? -1: parseInt(args.CHANNEL));
-        return this.connectedDevices.find((e) => (e.dev.name === name && e.dev._serialNumber === serialnumber && e.dev._hubPort === port));
+        
+        return this.connectedDevices.find((e) => (e.dev.device.type === 'USB' ?
+                e.dev.name === name && e.dev._serialNumber === serialnumber :
+                e.dev.name === name && e.dev._serialNumber === serialnumber && e.dev._hubPort === port 
+            ));
     }
     _addToConnectedArray(device){
         this.connectedDevices.push(device);
@@ -1368,10 +1378,11 @@ class Scratch3Phidget22Blocks{
         const found = this._findIfCompositeConnected("Thumbstick Phidget", args);
         if(found === undefined){
             const d = this._findCompositeDevice("Thumbstick Phidget", args);
-
-            const ts = new Thumbstick(this.runtime, args.SERIALNUMBER, args.PORT);
-            ts.open();
-            this.connectedCompositeDevices.push(ts);
+            if(d !== undefined){
+                const ts = new Thumbstick(this.runtime,  args.SERIALNUMBER, args.PORT);
+                ts.open();
+                this.connectedCompositeDevices.push(ts);
+            }
         }
         else if(found.getAttached()){
             switch(args.CHANNEL){
@@ -1381,6 +1392,22 @@ class Scratch3Phidget22Blocks{
             }
         }
         return "UNKNOWN";
+    }
+
+    openRFID(args){        
+        const found = this._findIfConnected('RFID', {PORT:-1, ...args});
+        if(found === undefined){
+            const rfid = new RFID(this.runtime, args.SERIALNUMBER);
+            rfid.open();
+            this._addToConnectedArray(rfid);
+        }
+        else if(found.getAttached()){
+            if(found.getTagPresent())
+                return found.getLastTag();
+            else
+                return '';
+        }
+        return 'UNKNOWN';
     }
 
     basicDistanceSensor(){
@@ -1472,8 +1499,26 @@ class Scratch3Phidget22Blocks{
         return this.basicThumbstick({CHANNEL: 'button'});
     }
 
+    basicRFID(){
+            return this.openRFID({SERIALNUMBER: -1});
+    }
+
     onbutton(){
         console.log('i am in a button');
+    }
+
+    closeAllPhidgets(){  
+        while(this.connectedDevices.length > 0) {
+            this.connectedDevices[0].close();
+            this.connectedDevices.shift();
+        }
+        
+        while(this.connectedCompositeDevices.length > 0) {
+            this.connectedCompositeDevices[0].close();
+            this.connectedCompositeDevices.shift();
+        }
+
+        console.log("closed all devices");
     }
 }
 
