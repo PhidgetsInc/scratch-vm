@@ -1,6 +1,7 @@
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const formatMessage = require('format-message');
+//const BlockUtility = require('../../engine/block-utility');
 //const $ = require('jquery');
 //const phidget22 = require('phidget22'); 
 // require('./phidget22.min.js');
@@ -10,7 +11,8 @@ const menuIconURI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPoAAAD6CAYAA
 const blockIconURI = 'data:image/png;base64,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';
 
 class Phidget{
-    constructor(runtime){
+    
+    constructor(runtime = null){
         this.runtime = runtime;
     }
 
@@ -38,10 +40,14 @@ class Phidget{
         console.log("Closing " + this.dev.name);
         this.dev.close();
     }
+
+    emit(...args){
+        this.runtime.emit(...args, this.dev);
+    }
 }
 
 class DigitalInput extends Phidget{
-    constructor(runtime, serialnumber, port, channel){
+    constructor(serialnumber, port, channel, runtime = null){
         super(runtime);
 
         this.dev = new phidget22.DigitalInput();
@@ -49,39 +55,44 @@ class DigitalInput extends Phidget{
         this.dev.setHubPort(port === 'any' ? -1 : parseInt(port));
         this.dev.setChannel(channel === 'any' ? -1 : parseInt(channel));
         this.dev.onAttach = this._onAttach;
-        //this.dev.onStateChange = this._onStateChange;
+        this.dev.onStateChange = this._onStateChange.bind(this);
     }
 
     _onStateChange(state){
-        console.log('state changed: ' + state);
+        //console.log('state changed: ' + state);
+        this.emit('onStateChange', state);
     }
 
     getState(){
-        return this.dev.data.state;
+        return this.dev.data?.state;
     }
 }
 
 class DigitalInputHubPortDevice extends DigitalInput{
-    constructor(runtime, serialnumber, port, channel){
-        super(runtime, serialnumber, port, channel);
+    constructor(serialnumber, port, channel, runtime = null){
+        super(serialnumber, port, channel, runtime);
         this.dev.setIsHubPortDevice(true);
     }
 }
 
 class DigitalOutput extends Phidget{
-    constructor(runtime, serialnumber, port, channel){
+    constructor(serialnumber, port, channel, runtime = null){
         super(runtime);
 
         this.dev = new phidget22.DigitalOutput();
         this.dev.setDeviceSerialNumber(serialnumber === 'any' ? -1 : parseInt(serialnumber));
         this.dev.setHubPort(port === 'any' ? -1 : parseInt(port));
         this.dev.setChannel(channel === 'any' ? -1 : parseInt(channel));
-        this.dev.onAttach = this._onAttach;
+        this.dev.onAttach = this._onAttach.bind(this);
+
+        //this.blockUtility = new BlockUtility(this.runtime.sequencer);
+
     }
 
-    open(timeout, setInitialState){
+    open(timeout = 0, setInitialState = false){
         this.dev.onAttach = function(){
-            console.log("inside attach with initial state");
+            //console.log("inside attach with initial state");
+            console.log("DigitalOutput attached with initial state: " + setInitialState);
             this.setState(setInitialState);
         };
 
@@ -92,40 +103,56 @@ class DigitalOutput extends Phidget{
     };
 
     setState(state){
-        if(state !== (this.getState() === 1)) {      //only change if state if required, otherwise we might end up spamming setState to the socket
-            console.log('setting state!');
-            this.dev.setState(state).catch(function(err){
-                console.log('error setting state: ' + err);
-                console.log(err);
-            });
-        }
+        // const prevState = this.getState();
+        // if(prevState === undefined){
+        //     this.dev.setState(state);
+        //     return;
+        // }
+        // else if((state !== (prevState === 1))) {      //only change if state if required, otherwise we might end up spamming setState to the socket
+        //     //console.log('setting state!');
+        //     this.dev.setState(state).then((ret) => {
+        //         //this.runtime.threads[0].STATE = Thread.STATUS_RUNNING;
+        //     }).catch(function(err){
+        //         console.log('error setting state: ' + err);
+        //         console.log(err);
+        //     });
+        //     this.blockUtility.thread = this.runtime.threads[0];
+        //     this.blockUtility.yieldTick();
+        // }
+        this.dev.setState(state).catch(function(err){
+            console.log('error setting state: ' + err);
+            console.log(err);
+        });
     };
 
     getState(){
         //return this.dev.getState();
-        return this.dev.data.state;
+        return this.dev.data?.state;
     };
 
     setDutyCycle(dutycycle){
-        this.dev.setDutyCycle(dutycycle);
+        this.dev.setDutyCycle(dutycycle).catch(function(err){
+            console.log('error setting DutyCycle: ' + err);
+            console.log(err);
+        });
     };
 
     getDutyCycle(){
-        return this.dev.getDutyCycle();
-        //return this.dev.data.dutycycle;
+        //return this.dev.getDutyCycle();
+        return this.dev.data.dutycycle;
     };
 }
 
 class DigitalOutputHubPortDevice extends DigitalOutput{
-    constructor(runtime, serialnumber, port, channel){
-        super(runtime, serialnumber, port, channel);
+    constructor(serialnumber, port, channel, runtime = null){
+        super(serialnumber, port, channel, runtime);
         this.dev.setIsHubPortDevice(true);
     };
 }
 
 class DistanceSensor extends Phidget{
-    constructor(runtime, serialnumber, port, channel){
-        super(runtime);
+    constructor(serialnumber, port, channel){
+        super();
 
         this.dev = new phidget22.DistanceSensor();
         this.dev.setDeviceSerialNumber(serialnumber === 'any' ? -1 : parseInt(serialnumber));
@@ -145,8 +172,8 @@ class DistanceSensor extends Phidget{
 }
 
 class LightSensor extends Phidget{
-    constructor(runtime, serialnumber, port, channel){
-        super(runtime);
+    constructor(serialnumber, port, channel){
+        super();
 
         this.dev = new phidget22.LightSensor();
         this.dev.setDeviceSerialNumber(serialnumber ==='any' ? -1 : parseInt(serialnumber));
@@ -161,13 +188,13 @@ class LightSensor extends Phidget{
     }
 
     getIlluminance(){
-        return this.dev.data.illuminance;
+        return this.dev.data?.illuminance;
     }
 }
 
 class HumiditySensor extends Phidget{
-    constructor(runtime, serialnumber, port, channel){
-        super(runtime);
+    constructor(serialnumber, port, channel){
+        super();
 
         this.dev = new phidget22.HumiditySensor();
         this.dev.setDeviceSerialNumber(serialnumber === 'any' ? -1 : parseInt(serialnumber));
@@ -182,13 +209,13 @@ class HumiditySensor extends Phidget{
     }
 
     getHumidity(){
-        return this.dev.data.humidity;
+        return this.dev.data?.humidity;
     }
 }
 
 class PHSensor extends Phidget{
-    constructor(runtime, serialnumber, port, channel){
-        super(runtime);
+    constructor(serialnumber, port, channel){
+        super();
 
         this.dev = new phidget22.PHSensor();
         this.dev.setDeviceSerialNumber(serialnumber === 'any' ? -1 : parseInt(serialnumber));
@@ -202,13 +229,13 @@ class PHSensor extends Phidget{
     }
 
     getPH(){
-        return this.dev.data.pH;
+        return this.dev.data?.pH;
     }
 }
 
 class TemperatureSensor extends Phidget{
-    constructor(runtime, serialnumber, port, channel){
-        super(runtime);
+    constructor(serialnumber, port, channel){
+        super();
 
         this.dev = new phidget22.TemperatureSensor();
         this.dev.setDeviceSerialNumber(serialnumber === 'any' ? -1 : parseInt(serialnumber));
@@ -223,13 +250,13 @@ class TemperatureSensor extends Phidget{
     }
 
     getTemperature(){
-        return this.dev.data.temperature;
+        return this.dev.data?.temperature;
     }
 }
 
 class VoltageRatioInput extends Phidget{
-    constructor(runtime, serialnumber, port, channel){
-        super(runtime);
+    constructor(serialnumber, port, channel){
+        super();
 
         this.dev = new phidget22.VoltageRatioInput();
         this.dev.setDeviceSerialNumber(serialnumber === 'any' ? -1 : parseInt(serialnumber));
@@ -243,21 +270,21 @@ class VoltageRatioInput extends Phidget{
     }
 
     getVoltageRatio(){
-        return this.dev.data.voltageRatio;
+        return this.dev.data?.voltageRatio;
     }
 }
 
 class VoltageRatioInputHubPort extends VoltageRatioInput{
-    constructor(runtime, serialnumber, port, channel){
-        super(runtime, serialnumber, port, channel);
+    constructor(serialnumber, port, channel){
+        super(serialnumber, port, channel);
 
         this.dev.setIsHubPort(true);
     }
 }
 
 class VoltageInput extends Phidget{
-    constructor(runtime, serialnumber, port, channel){
-        super(runtime);
+    constructor(serialnumber, port, channel){
+        super();
 
         this.dev = new phidget22.VoltageInput();
         this.dev.setDeviceSerialNumber(serialnumber === 'any' ? -1 : parseInt(serialnumber));
@@ -270,21 +297,21 @@ class VoltageInput extends Phidget{
     }
 
     getVoltage(){
-        return this.dev.data.voltage;
+        return this.dev.data?.voltage;
     }
 }
 
 class VoltageInputHubPort extends VoltageInput{
-    constructor(runtime, serialnumber, port, channel){
-        super(runtime, serialnumber, port, channel);
+    constructor(serialnumber, port, channel){
+        super(serialnumber, port, channel);
 
         this.dev.setIsHubPort(true);
     }
 }
 
 class Accelerometer extends Phidget{
-    constructor(runtime, serialnumber, port, channel){
-        super(runtime);
+    constructor(serialnumber, port, channel){
+        super();
 
         this.dev = new phidget22.Accelerometer();
         this.dev.setDeviceSerialNumber(serialnumber === 'any' ? -1 : parseInt(serialnumber));
@@ -293,6 +320,7 @@ class Accelerometer extends Phidget{
         this.dev.onAttach = this._onAttach;
 
         this._prevAccel = [0, 0, 0];
+        this._prevMagnitude = 1;
     }
 
     _onAccelerationChange(accel){
@@ -300,7 +328,15 @@ class Accelerometer extends Phidget{
     }
 
     getAcceleration(){
-        return this.dev.data.acceleration;
+        return this.dev.data?.acceleration;
+    }
+
+    get prevMagnitude(){
+        return this._prevMagnitude;
+    }
+
+    set prevMagnitude(mag){
+        this._prevMagnitude = mag;
     }
 
     get prevAccel(){
@@ -314,8 +350,8 @@ class Accelerometer extends Phidget{
 }
 
 class Gyroscope extends Phidget{
-    constructor(runtime, serialnumber, port, channel){
-        super(runtime);
+    constructor(serialnumber, port, channel){
+        super();
 
         this.dev = new phidget22.Gyroscope();
         this.dev.setDeviceSerialNumber(serialnumber === 'any' ? -1 : parseInt(serialnumber));
@@ -329,7 +365,7 @@ class Gyroscope extends Phidget{
     }
 
     getAngularRate(){
-        return this.dev.data.angularRate;
+        return this.dev.data?.angularRate;
     }
 
     zero(){
@@ -338,8 +374,8 @@ class Gyroscope extends Phidget{
 }
 
 class Magnetometer extends Phidget{
-    constructor(runtime, serialnumber, port, channel){
-        super(runtime);
+    constructor(serialnumber, port, channel){
+        super();
 
         this.dev = new phidget22.Magnetometer();
         this.dev.setDeviceSerialNumber(serialnumber === 'any' ? -1 : parseInt(serialnumber));
@@ -357,18 +393,17 @@ class Magnetometer extends Phidget{
     }
 }
 
-class Thumbstick extends Phidget{
-    constructor(runtime, serialnumber, port){
-        super(runtime);
+class Thumbstick{
+    constructor(serialnumber, port, runtime = null){
 
         this.name = "Thumbstick Phidget";
         this.serialNumber = (serialnumber === 'any' ? -1 : parseInt(serialnumber));
         this.hubPort = (port === 'any' ? -1 : parseInt(port));
 
         this.dev = [null, null, null];
-        this.dev[0] = new VoltageRatioInput(runtime, this.serialNumber, this.hubPort, 0);
-        this.dev[1] = new VoltageRatioInput(runtime, this.serialNumber, this.hubPort, 1);
-        this.dev[2] = new DigitalInput(runtime, this.serialNumber, this.hubPort, 0);
+        this.dev[0] = new VoltageRatioInput(this.serialNumber, this.hubPort, 0);
+        this.dev[1] = new VoltageRatioInput(this.serialNumber, this.hubPort, 1);
+        this.dev[2] = new DigitalInput(this.serialNumber, this.hubPort, 0, runtime);
     }
 
     open(){
@@ -404,8 +439,8 @@ class Thumbstick extends Phidget{
 }
 
 class RFID extends Phidget{
-    constructor(runtime, serialnumber){
-        super(runtime);
+    constructor(serialnumber){
+        super();
 
         this.dev = new phidget22.RFID();
         this.dev.setDeviceSerialNumber(serialnumber === 'any' ? -1 : parseInt(serialnumber));
@@ -417,11 +452,11 @@ class RFID extends Phidget{
     }
 
     getLastTag(){
-        return this.dev.data.lastTagString;
+        return this.dev.data?.lastTagString;
     }
 
     getTagPresent(){
-        return this.dev.data.tagPresent;
+        return this.dev.data?.tagPresent;
     }
 
 }
@@ -432,13 +467,14 @@ class Scratch3Phidget22Blocks{
 
         this.availableDevices = [];
         this.connectedDevices = [];
-        this.connectedCompositeDevices = [];
-        this.newDevice;        
+        this.newDevice;     
         
-        var conn_opts = { name: "PhidgetServer", passwd: "",  onConnect: this._onConnect };
+        
+        const conn_opts = { name: "PhidgetServer", passwd: "",  onConnect: this._onConnect };
 
-        var port = (window.location.port === '' || window.location.port === '8601') ? 8989 : parseInt(window.location.port);
-        this.phid22conn = new phidget22.Connection(port, window.location.hostname, conn_opts );
+        const hostname = (window.location?.hostname === undefined || window.location.hostname === "" || window.location.hostname === "wwwdev" || window.location.hostname === "192.168.3.155") ? "localhost" : window.location.hostname;
+        const port = (window.location.port === '' || window.location.port === '8601') ? 8989 : parseInt(window.location.port);
+        this.phid22conn = new phidget22.Connection(port, hostname, conn_opts );
 
         this.phid22conn.connect().then(function(){
             return true;
@@ -463,9 +499,16 @@ class Scratch3Phidget22Blocks{
         });
 
         this.phidmanager.open();        
-        this.runtime.on('PROJECT_STOP_ALL', this.closeAllPhidgets.bind(this));
-    };
-    
+        
+        //this.runtime.on('PROJECT_STOP_ALL', this.closeAllPhidgets.bind(this));    //causes problems when clicking the green flag...
+        this.runtime.on('PROJECT_CHANGED', this.projectChanged.bind(this));
+        this.runtime.on('PROJECT_LOADED', this.projectLoaded.bind(this));
+        this.runtime.on('PROJECT_START', this.projectChanged.bind(this));
+        //this.runtime.on('MONITORS_UPDATE', this.monitorsUpdate.bind(this));
+        this.runtime.on('EXTENSION_ADDED', this.extensionAdded);
+
+        //this.runtime.on('onStateChange', this.onStateChange.bind(this));
+    };  
 
     getInfo(){
         return {
@@ -498,39 +541,57 @@ class Scratch3Phidget22Blocks{
             // code to enable Reporter-watcher for reporters with arguments is in runtime.js, uncomment line 1172 and comment out lines 1173-1175
             blocks: [
                 {
-                    function: 'onbutton',
+                    opcode: 'reconnectPhidgets',
+                    blockType: BlockType.COMMAND,
+                    text: 'Reconnect Phidgets',
+                    hideFromPalette: true,
+                },
+                {
+                    func: 'onbutton',
                     blockType: BlockType.BUTTON,
                     text: 'Basic Blocks'
                 },
                 {
                     opcode: 'basicDistanceSensor',
+                    func: 'openDistanceSensor',
                     blockType: BlockType.REPORTER,
-                    text: 'DistanceSensor (mm)'
+                    text: 'DistanceSensor (mm)',
+                    name: 'DistanceSensor',
                 },
                 {
                     opcode: 'basicHumiditySensor',
+                    func: 'openHumiditySensor',
                     blockType: BlockType.REPORTER,
-                    text: 'HumiditySensor (%)'
+                    text: 'HumiditySensor (%)',
+                    name: 'HumiditySensor'
                 },
                 {
                     opcode: 'basicLightSensor',
+                    func: 'openLightSensor',
                     blockType: BlockType.REPORTER,
-                    text: 'LightSensor (lux)'
+                    text: 'LightSensor (lux)',
+                    name: 'LightSensor'
                 },
                 {
                     opcode: 'basicPHSensor',
+                    func: 'openPHSensor',
                     blockType: BlockType.REPORTER,
-                    text: 'pHSensor (pH)'
+                    text: 'pHSensor (pH)',
+                    name: 'PHSensor'
                 },
                 {
                     opcode: 'basicTemperatureSensor',
+                    func: 'openTemperatureSensor',
                     blockType: BlockType.REPORTER,
-                    text: 'TemperatureSensor (°C)'
+                    text: 'TemperatureSensor (°C)',
+                    name: 'TemperatureSensor'
                 },
                 {
                     opcode: 'basicAccelerometerGesture',
+                    func: 'getAccelerometerGesture',
                     blockType: BlockType.HAT,
                     text: 'on Accelerometer [GESTURE]',
+                    name: 'Accelerometer',
                     arguments: {
                         GESTURE: {
                             type: ArgumentType.STRING,
@@ -541,8 +602,10 @@ class Scratch3Phidget22Blocks{
                 },
                 {
                     opcode: 'basicAccelerometerIsGesture',
+                    func: 'getAccelerometerGesture',
                     blockType: BlockType.BOOLEAN,
                     text: 'is Accelerometer [GESTURE] Gesture',
+                    name: 'Accelerometer',
                     arguments: {
                         GESTURE: {
                             type: ArgumentType.STRING,
@@ -553,8 +616,10 @@ class Scratch3Phidget22Blocks{
                 },
                 {
                     opcode: 'basicAccelerometer',
+                    func: 'openAccelerometer',
                     blockType: BlockType.REPORTER,
                     text: 'Accelerometer (g) [AXIS]',
+                    name: 'Accelerometer',
                     arguments: {
                         AXIS: {
                             type: ArgumentType.STRING,
@@ -565,56 +630,68 @@ class Scratch3Phidget22Blocks{
                 },
                 {
                     opcode: 'basicAccelerometerTilt',
+                    func: 'openAccelerometerTilt',
                     blockType: BlockType.REPORTER,
                     text: 'Accelerometer Tilt Angle (°) [AXIS]',
+                    name: 'Accelerometer',
                     arguments: {
                         AXIS: {
                             type: ArgumentType.STRING,
                             defaultValue: 'x-axis',
-                            menu: 'menuAxes'
+                            menu: 'menuAxesXYZ'
                         }
                     }
                 },
                 {
                     opcode: 'basicGyroscope',
+                    func: 'openGyroscope',
                     blockType: BlockType.REPORTER,
                     text: 'Gyroscope (°/s) [AXIS]',
+                    name: 'Gyroscope',
                     arguments: {
                         AXIS: {
                             type: ArgumentType.STRING,
                             defaultValue: 'x-axis',
-                            menu: 'menuAxes'
+                            menu: 'menuAxesXYZ'
                         }
                     }
                 },
                 {
                     opcode: 'basicZeroGyroscope',
+                    func: 'zeroGyroscope',
                     blockType: BlockType.COMMAND,
                     text: 'Zero Gyroscope',
+                    name: 'Gyroscope',
                 },
                 {
                     opcode: 'basicMagnetometer',
+                    func: 'openMagnetometer',
                     blockType: BlockType.REPORTER,
                     text: 'Magnetometer (G) [AXIS]',
+                    name: 'Magnetometer',
                     arguments: {
                         AXIS: {
                             type: ArgumentType.STRING,
                             defaultValue: 'x-axis',
-                            menu: 'menuAxes'
+                            menu: 'menuAxesXYZ'
                         }
                     }
                 },
                 {
                     opcode: 'basicOnThumbstickButton',
+                    func: 'onThumbstickButtonClick',
                     blockType: BlockType.HAT,
-                    text: 'on Thumbstick Click'
+                    text: 'on Thumbstick Click',
+                    name: 'Thumbstick Phidget',
                 },
                 {
                     opcode: 'basicThumbstick',
+                    func: 'openThumbstick',
                     blockType: BlockType.REPORTER,
-                    text: 'Thumbstick [CHANNEL]',
+                    text: 'Thumbstick [AXIS]',
+                    name: 'Thumbstick Phidget',
                     arguments: {
-                        CHANNEL: {
+                        AXIS: {
                             type: ArgumentType.STRING,
                             defaultValue: 'x-axis',
                             menu: 'menuThumbstick'
@@ -622,14 +699,23 @@ class Scratch3Phidget22Blocks{
                     }
                 },
                 {
+                    opcode: 'basicGetThumbstickButtonState',
+                    func: 'openThumbstick',
+                    blockType: BlockType.BOOLEAN,
+                    text: 'Thumbstick Button State',
+                    name: 'Thumbstick Phidget',
+                },
+                {
                     opcode: 'basicRFID',
+                    func: 'openRFID',
                     blockType: BlockType.REPORTER,
-                    text: 'RFID Tag'
+                    text: 'RFID Tag',
+                    name: 'RFID',
                 },
                 '---',
                 '---',
                 {
-                    function: 'onbutton',
+                    func: 'onbutton',
                     blockType: BlockType.BUTTON,
                     text: 'Advanced Blocks'
                 },
@@ -637,7 +723,7 @@ class Scratch3Phidget22Blocks{
                     opcode: 'setDigitalOutputState',
                     blockType: BlockType.COMMAND,
                     text: 'DigitalOutput SN: [SERIALNUMBER] Port: [PORT] Set State: [STATE]',
-                    blockAllThreads: true,
+                    name: 'DigitalOutput',
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -664,6 +750,7 @@ class Scratch3Phidget22Blocks{
                     opcode: 'getDigitalOutputState',
                     blockType: BlockType.BOOLEAN,
                     text: 'DigitalOutput SN: [SERIALNUMBER] Port: [PORT] State',
+                    name: 'DigitalOutput',
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -685,7 +772,8 @@ class Scratch3Phidget22Blocks{
                 {
                     opcode: 'openDigitalInputOnStateChange',
                     blockType: BlockType.HAT,
-                    text: 'DI SN: [SERIALNUMBER] Port: [PORT] onStateChange: [STATE]',
+                    text: 'DigitalInput SN: [SERIALNUMBER] Port: [PORT] onStateChange: [STATE]',
+                    name: 'DigitalInput',
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -711,7 +799,8 @@ class Scratch3Phidget22Blocks{
                 {
                     opcode: 'getDigitalInputState',
                     blockType: BlockType.BOOLEAN,
-                    text: 'DI SN: [SERIALNUMBER] Port: [PORT] State',
+                    text: 'DigitalInput SN: [SERIALNUMBER] Port: [PORT] State',
+                    name: 'DigitalInput',
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -734,6 +823,7 @@ class Scratch3Phidget22Blocks{
                     opcode: 'openDistanceSensor',
                     blockType: BlockType.REPORTER,
                     text: 'DistanceSensor (mm) SN: [SERIALNUMBER] Port: [PORT]',
+                    name: 'DistanceSensor',
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -755,6 +845,7 @@ class Scratch3Phidget22Blocks{
                     opcode: 'openHumiditySensor',
                     blockType: BlockType.REPORTER,
                     text: 'HumiditySensor (%) SN: [SERIALNUMBER] Port: [PORT]',
+                    name: 'HumiditySensor',
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -776,6 +867,7 @@ class Scratch3Phidget22Blocks{
                     opcode: 'openLightSensor',
                     blockType: BlockType.REPORTER,
                     text: 'LightSensor (lux) SN: [SERIALNUMBER] Port: [PORT]',
+                    name: 'LightSensor',
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -797,6 +889,7 @@ class Scratch3Phidget22Blocks{
                     opcode: 'openPHSensor',
                     blockType: BlockType.REPORTER,
                     text: 'pHSensor (pH) SN: [SERIALNUMBER] Port: [PORT]',
+                    name: 'PHsensor',
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -818,6 +911,7 @@ class Scratch3Phidget22Blocks{
                     opcode: 'openTemperatureSensor',
                     blockType: BlockType.REPORTER,
                     text: 'TemperatureSensor (°C) SN: [SERIALNUMBER] Port: [PORT]',
+                    name: 'TemperatureSensor',
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -837,9 +931,65 @@ class Scratch3Phidget22Blocks{
                 },
                 '---',
                 {
+                    opcode: 'getAccelerometerIsGesture',
+                    func: 'getAccelerometerGesture',
+                    blockType: BlockType.BOOLEAN,
+                    text: 'is Accelerometer SN: [SERIALNUMBER] Port: [PORT] [GESTURE] Gesture',
+                    name: 'Accelerometer',
+                    arguments: {
+                        SERIALNUMBER: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'any',
+                            menu: 'menuAvailableDevices'
+                        },
+                        PORT: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'any',
+                            menu: 'menuHubPort'
+                        },
+                        CHANNEL: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'any'
+                        },
+                        GESTURE: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'shake',
+                            menu: 'menuAccelerometerGestures'
+                        }
+                    }
+                },
+                {
+                    opcode: 'getAccelerometerGesture',
+                    blockType: BlockType.HAT,
+                    text: 'on Accelerometer SN: [SERIALNUMBER] Port: [PORT] [GESTURE]',
+                    name: 'Accelerometer',
+                    arguments:{
+                        SERIALNUMBER: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'any',
+                            menu: 'menuAvailableDevices'
+                        },
+                        PORT: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'any',
+                            menu: 'menuHubPort'
+                        },
+                        CHANNEL: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'any'
+                        },
+                        GESTURE: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'shake',
+                            menu: 'menuAccelerometerGestures'
+                        }
+                    }
+                },
+                {
                     opcode: 'openAccelerometer',
                     blockType: BlockType.REPORTER,
                     text: 'Accelerometer (g) SN: [SERIALNUMBER] Port: [PORT] [AXIS]',
+                    name: 'Accelerometer',
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -858,7 +1008,7 @@ class Scratch3Phidget22Blocks{
                         AXIS: {
                             type: ArgumentType.STRING,
                             defaultValue: 'x-axis',
-                            menu: 'menuAxes'
+                            menu: 'menuAxesXYZ'
                         }
                     }
                 },
@@ -866,6 +1016,7 @@ class Scratch3Phidget22Blocks{
                     opcode: 'openAccelerometerTilt',
                     blockType: BlockType.REPORTER,
                     text: 'Accelerometer Tilt Angle (°) SN: [SERIALNUMBER] Port: [PORT] [AXIS]',
+                    name: 'Accelerometer',
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -884,7 +1035,7 @@ class Scratch3Phidget22Blocks{
                         AXIS: {
                             type: ArgumentType.STRING,
                             defaultValue: 'x-axis',
-                            menu: 'menuAxes'
+                            menu: 'menuAxesXYZ'
                         }
                     }
                 },
@@ -892,6 +1043,7 @@ class Scratch3Phidget22Blocks{
                     opcode: 'openGyroscope',
                     blockType: BlockType.REPORTER,
                     text: 'Gyroscope (°/s) SN: [SERIALNUMBER] Port: [PORT] [AXIS]',
+                    name: 'Gyroscope',
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -910,7 +1062,7 @@ class Scratch3Phidget22Blocks{
                         AXIS: {
                             type: ArgumentType.STRING,
                             defaultValue: 'x-axis',
-                            menu: 'menuAxes'
+                            menu: 'menuAxesXYZ'
                         }
                     }
                 },
@@ -918,6 +1070,7 @@ class Scratch3Phidget22Blocks{
                     opcode: 'zeroGyroscope',
                     blockType: BlockType.COMMAND,
                     text: 'Zero Gyroscope SN: [SERIALNUMBER] Port: [PORT]',
+                    name: 'Gyroscope',
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -939,6 +1092,7 @@ class Scratch3Phidget22Blocks{
                     opcode: 'openMagnetometer',
                     blockType: BlockType.REPORTER,
                     text: 'Magnetometer (G) SN: [SERIALNUMBER] Port: [PORT] [AXIS]',
+                    name: 'Magnetometer',
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -957,14 +1111,77 @@ class Scratch3Phidget22Blocks{
                         AXIS: {
                             type: ArgumentType.STRING,
                             defaultValue: 'x-axis',
-                            menu: 'menuAxes'
+                            menu: 'menuAxesXYZ'
+                        }
+                    }
+                },
+                {
+                    opcode: 'onThumbstickButtonClick',
+                    blockType: BlockType.HAT,
+                    text: 'on Thumbstick Click SN: [SERIALNUMBER] Port: [PORT]',
+                    name: 'Thumbstick Phidget',
+                    arguments:{
+                        SERIALNUMBER: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'any',
+                            menu: 'menuAvailableDevices'
+                        },
+                        PORT: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'any',
+                            menu: 'menuHubPort'
                         }
                     }
                 },
                 {
                     opcode: 'openThumbstick',
                     blockType: BlockType.REPORTER,
-                    text: 'Thumbstick SN: [SERIALNUMBER] Port: [PORT] [CHANNEL]',
+                    text: 'Thumbstick SN: [SERIALNUMBER] Port: [PORT] [AXIS]',
+                    name: 'Thumbstick Phidget',
+                    arguments:{
+                        SERIALNUMBER: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'any',
+                            menu: 'menuAvailableDevices'
+                        },
+                        PORT: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'any',
+                            menu: 'menuHubPort'
+                        },
+                        AXIS: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'x-axis',
+                            menu: 'menuThumbstick'
+                        }
+                    }
+                },
+                {
+                    opcode: 'getThumbstickButtonState',
+                    func: 'openThumbstick',
+                    blockType: BlockType.BOOLEAN,
+                    text: 'Thumbstick Button State SN: [SERIALNUMBER] Port: [PORT]',
+                    name: 'Thumbstick Phidget',
+                    arguments:{
+                        SERIALNUMBER: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'any',
+                            menu: 'menuAvailableDevices'
+                        },
+                        PORT: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'any',
+                            menu: 'menuHubPort'
+                        },
+                    }
+                },
+                {
+                    opcode: 'onDigitalInputStateChange',
+                    func: 'onStateChange',
+                    blockType: BlockType.EVENT,
+                    text: 'DigitalInput SN: [SERIALNUMBER] Port: [PORT] onStateChangeEVENT: [STATE]',
+                    name: 'DigitalInput',
+                    hideFromPalette: false,
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -978,28 +1195,15 @@ class Scratch3Phidget22Blocks{
                         },
                         CHANNEL: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'x-axis',
-                            menu: 'menuThumbstick'
+                            defaultValue: 'any'
+                        },
+                        STATE: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'any',
+                            menu: 'menuDigitalInputStates'
                         }
                     }
                 },
-                // {
-                //     opcode: 'onStateChange',
-                //     blockType: BlockType.EVENT,      //currently no documentation on how to use/define this block type
-                //     text: 'DigitalInput Event SN: [SERIALNUMBER] Port: [PORT]',
-                //     arguments:{
-                //         SERIALNUMBER: {
-                //             type: ArgumentType.STRING,
-                //             defaultValue: 'any',
-                //             menu: 'menuAvailableDevices'
-                //         },
-                //         PORT: {
-                //             type: ArgumentType.STRING,
-                //             defaultValue: 'any',
-                //             menu: 'menuHubPort'
-                //         }
-                //     }
-                // },
             //     {
             //         // Required: the machine-readable name of this operation.
             //         // This will appear in project JSON. Must not contain a '.' character.
@@ -1075,18 +1279,9 @@ class Scratch3Phidget22Blocks{
             //     },
 
             ],    
-            menus: {            
+            menus: {      
                 menuAvailableDevices: 'getAvailableDevices',
-
-                menuDigitalInputStates: [
-                    'any',
-                    'true',
-                    'false'
-                ],    
-                menuDigitalOutputStates: [
-                    'true',
-                    'false'
-                ],
+                
                 menuHubPort: [
                     {
                         text: 'any',
@@ -1094,18 +1289,18 @@ class Scratch3Phidget22Blocks{
                     },
                     '0', '1', '2', '3', '4', '5'
                 ],
-                menuAxes: [
-                    'x-axis', 'y-axis', 'z-axis'
-                ],
-                menuAccelerometerAxes: [
-                    'x-axis', 'y-axis', 'z-axis', 'magnitude'
-                ],
-                menuAccelerometerGestures: [
-                    'shake', '2g', '4g', '8g', 'tilt x-axis', 'tilt y-axis', 'tilt z-axis'
-                ],
-                menuThumbstick: [
-                    'x-axis', 'y-axis', 'button'
-                ]
+
+
+                menuDigitalInputStates: ['any', 'true', 'false'],    
+
+                menuDigitalOutputStates: ['true', 'false'],
+
+                menuAxesXYZ: ['x-axis', 'y-axis', 'z-axis'],
+
+                menuAccelerometerAxes: ['x-axis', 'y-axis', 'z-axis', 'magnitude'],
+                menuAccelerometerGestures: ['shake', '2g', '4g', '8g', 'tilt x-axis', 'tilt y-axis', 'tilt z-axis'],
+
+                menuThumbstick: ['x-axis', 'y-axis']
             }
         };
     };
@@ -1114,32 +1309,24 @@ class Scratch3Phidget22Blocks{
         console.log("Connected to NetworkServer!");
     };
 
-    _findIfCompositeConnected(name, args){        
-        const serialnumber = (args.SERIALNUMBER === 'any' ? -1 : parseInt(args.SERIALNUMBER));
-        const port = (args.PORT === 'any' ? -1 : parseInt(args.PORT));
-        return this.connectedCompositeDevices.find((e) => (e.name === name && (serialnumber < 0 ? true : (e.serialNumber === serialnumber)) && (port < 0 ? true : (e.hubPort === port))));
-    }
+    _findIfConnected(args){
+        const serialnumber = (args.SERIALNUMBER === undefined || (args.SERIALNUMBER === 'any') ? -1 : parseInt(args.SERIALNUMBER));
+        const port = ((args.PORT === undefined || args.PORT === 'any') ? -1 : parseInt(args.PORT));
+        const channel = ((args.CHANNEL === undefined || args.CHANNEL === 'any') ? -1: parseInt(args.CHANNEL));
 
-    _findCompositeDevice(name, args){  
-        const serialnumber = (args.SERIALNUMBER === 'any' ? -1 : parseInt(args.SERIALNUMBER));
-        const port = (args.PORT === 'any' ? -1 : parseInt(args.PORT));
-        // if(serialnumber < 0 && port < 0)
-        //     return this.availableDevices.find((e) => (e.device.name === name));
-        return this.availableDevices.find((e) => (e.device.name === name && (serialnumber < 0 ? true : (e.device.serialNumber === serialnumber)) && (port < 0 ? true : (e.device.hubPort === port))));
-    }
-
-    _findIfConnected(name, args){
-        const serialnumber = (args.SERIALNUMBER === 'any' ? -1 : parseInt(args.SERIALNUMBER));
-        const port = (args.PORT === 'any' ? -1 : parseInt(args.PORT));
-        const channel = (args.CHANNEL === 'any' ? -1: parseInt(args.CHANNEL));
-        
-        return this.connectedDevices.find((e) => (e.dev.device.type === 'USB' ?
-                e.dev.name === name && e.dev._serialNumber === serialnumber :
-                e.dev.name === name && e.dev._serialNumber === serialnumber && e.dev._hubPort === port 
-            ));
-    }
-    _addToConnectedArray(device){
-        this.connectedDevices.push(device);
+        return this.connectedDevices.find((e) => 
+            (
+                (e.name === args.NAME) && 
+                (serialnumber < 0 ? true : (e.serialNumber === serialnumber)) && 
+                (port < 0 ? true : (e.hubPort === port))
+            )
+            ||
+            (
+                (e.dev && e.dev.device && (e.dev.device.type === 'USB')) ?
+                ((e.dev.name === args.NAME) && (e.dev._serialNumber === serialnumber)) :
+                ((e.dev.name === args.NAME) && (e.dev._serialNumber === serialnumber) && (e.dev._hubPort === port))
+            )
+        );
     }
 
     getAvailableDevices(){
@@ -1152,17 +1339,11 @@ class Scratch3Phidget22Blocks{
         });
 
         return serialNumbers;
-    }
+    };
 
     openDigitalInputOnStateChange(args){ 
-        const found = this._findIfConnected('DigitalInput', args);
-        if(found === undefined){
-            const digitalInput = new DigitalInputHubPortDevice(this.runtime, args.SERIALNUMBER, args.PORT, args.CHANNEL);
-            digitalInput.open();
-            this._addToConnectedArray(digitalInput);
-            
-        }
-        else if(found.getAttached()){
+        const found = this._findIfConnected({NAME: 'DigitalInput', ...args});
+        if(found && found.getAttached()){
             if(args.STATE === 'any')
                 return found.getState();
             return found.getState() === (args.STATE ==='true');
@@ -1171,118 +1352,71 @@ class Scratch3Phidget22Blocks{
     };
 
     getDigitalInputState(args){ 
-        const found = this._findIfConnected('DigitalInput', args);
-        if(found === undefined){
-            const digitalInput = new DigitalInputHubPortDevice(this.runtime, args.SERIALNUMBER, args.PORT, args.CHANNEL);
-            digitalInput.open();
-            this._addToConnectedArray(digitalInput);
-            
-        }
-        else if(found.getAttached()){
+        const found = this._findIfConnected({NAME: 'DigitalInput', ...args});
+        if(found && found.getAttached()){
             return found.getState();
         }
         return 'UNKNOWN';
     };
 
     setDigitalOutputState(args){
-        let found = this._findIfConnected('DigitalOutput', args);
-        if(found === undefined){
-            const digitalOutput = new DigitalOutputHubPortDevice(this.runtime, args.SERIALNUMBER, args.PORT, args.CHANNEL);
-            digitalOutput.open(1000, args.STATE === 'true');
-            this._addToConnectedArray(digitalOutput);
-            found = digitalOutput;
-        } else if(found.getAttached()){
+        const found = this._findIfConnected({NAME: 'DigitalOutput', ...args});
+        if(found && found.getAttached()){
             found.setState(args.STATE === 'true');
         }
     };
 
     getDigitalOutputState(args){    
-        const found = this._findIfConnected('DigitalOutput', args);
-        if(found === undefined){
-            const digitalOutput = new DigitalOutputHubPortDevice(this.runtime, args.SERIALNUMBER, args.PORT, args.CHANNEL);
-            digitalOutput.open();
-            this._addToConnectedArray(digitalOutput);
-        }
-        else if(found.getAttached()){
+        const found = this._findIfConnected({NAME: 'DigitalOutput', ...args});
+        if(found && found.getAttached()){
             return found.getState() === 1;
         }
-
         return 'UNKNOWN';
     };
 
     openDistanceSensor(args){
-        const found = this._findIfConnected('DistanceSensor', args);
-        if(found === undefined){
-            const distanceSensor = new DistanceSensor(this.runtime, args.SERIALNUMBER, args.PORT, args.CHANNEL);
-            distanceSensor.open();
-            this._addToConnectedArray(distanceSensor);
-        }
-        else if(found.getAttached()){
+        const found = this._findIfConnected({NAME: 'DistanceSensor', ...args});
+        if(found && found.getAttached()){
             return found.getDistance();
         }
         return 'UNKNOWN';
     };
 
     openLightSensor(args){
-        const found = this._findIfConnected('LightSensor', args);
-        if(found === undefined){
-            const lightsensor = new LightSensor(this.runtime, args.SERIALNUMBER, args.PORT, args.CHANNEL);
-            lightsensor.open();
-            this._addToConnectedArray(lightsensor);
-        }
-        else if(found.getAttached()){
+        const found = this._findIfConnected({NAME: 'LightSensor', ...args});
+        if(found && found.getAttached()){
             return found.getIlluminance();
         }
         return 'UNKNOWN';
     };
 
     openHumiditySensor(args){        
-        const found = this._findIfConnected('HumiditySensor', args);
-        if(found === undefined){
-            const humiditySensor = new HumiditySensor(this.runtime, args.SERIALNUMBER, args.PORT, args.CHANNEL);
-            humiditySensor.open(1000);
-            this._addToConnectedArray(humiditySensor);
-        }
-        else if(found.getAttached()){
+        const found = this._findIfConnected({NAME: 'HumiditySensor', ...args});
+         if(found && found.getAttached()){
             return found.getHumidity();
         }
         return 'UNKNOWN';
     };
 
     openPHSensor(args){
-        const found = this._findIfConnected('PHSensor', args);
-        if(found === undefined){
-            const pHSensor = new PHSensor(this.runtime, args.SERIALNUMBER, args.PORT, args.CHANNEL);
-            pHSensor.open();
-            this._addToConnectedArray(pHSensor);
-        }
-        else if(found.getAttached()){
+        const found = this._findIfConnected({NAME: 'pHSensor', ...args});
+         if(found && found.getAttached()){
             return found.getPH();
         }
         return 'UNKNOWN';
     };
 
     openTemperatureSensor(args){
-        const found = this._findIfConnected('TemperatureSensor', args);
-        if(found === undefined){
-            const temperatureSensor = new TemperatureSensor(this.runtime, args.SERIALNUMBER, args.PORT, args.CHANNEL);
-            temperatureSensor.open();
-            this._addToConnectedArray(temperatureSensor);
-        }
-        else if(found.getAttached()){
+        const found = this._findIfConnected({NAME: 'TemperatureSensor', ...args});
+        if(found && found.getAttached()){
             return found.getTemperature();
         }
         return 'UNKNOWN';
     };
 
     openAccelerometer(args){
-        const found = this._findIfConnected('Accelerometer', args);
-        if(found === undefined){
-            const accel = new Accelerometer(this.runtime, args.SERIALNUMBER, args.PORT, args.CHANNEL);
-            accel.open();
-            this._addToConnectedArray(accel);
-        }
-        else if(found.getAttached()){
+        const found = this._findIfConnected({NAME: 'Accelerometer', ...args});
+        if(found && found.getAttached()){
             const accel = found.getAcceleration();
             if(accel !== 'UNKNOWN'){
                 switch(args.AXIS){
@@ -1297,8 +1431,49 @@ class Scratch3Phidget22Blocks{
         return 'UNKNOWN';
     };
 
+    getAccelerometerGesture(args){
+        const found = this._findIfConnected({NAME: 'Accelerometer', ...args});
+        if(found && found.getAttached()){
+            const accel = found.getAcceleration();
+            if(accel !== 'UNKNOWN'){
+                accel[0] = +(accel[0]);
+                accel[1] = +(accel[1]);
+                accel[2] = +(accel[2]);
+
+                const magnitude = Math.sqrt(accel[0] * accel[0] + accel[1] * accel[1] + accel[2] * accel[2]);
+                const magdiff = magnitude - found.prevMagnitude
+                found.prevMagnitude = magnitude;
+                //const simpleAngle = [Math.asin(accel[0]) * 180 / Math.PI, Math.asin(accel[1]) * 180 / Math.PI, Math.asin(accel[2]) * 180 / Math.PI];
+                //console.log(simpleangle);
+                const threeDAngles = [Math.atan(accel[0] / Math.sqrt(accel[1] * accel[1] + accel[2] * accel[2])) * 180 / Math.PI, Math.atan(accel[1] / Math.sqrt(accel[0] * accel[0] + accel[2] * accel[2])) * 180 / Math.PI, Math.atan(Math.sqrt(accel[0] * accel[0] + accel[1] * accel[1])/accel[2]) * 180 / Math.PI];
+                //console.log(threeDAngles);
+                
+                //const diff = [found.prevAccel[0] - accel[0], found.prevAccel[1] - accel[1], found.prevAccel[2] - accel[2]];                        
+                //found.prevAccel = accel;
+
+                switch(args.GESTURE){
+                    case 'shake':   //fall through to 2g case
+                        //return (diff.find((e) => (Math.abs(e) > 2))) ? true : false;            
+                    case '2g': 
+                        return Math.abs(magdiff) > 2 ? true : false;     
+                        //return (magnitude >= 2) ? true : false;
+                    case '4g': 
+                        return Math.abs(magdiff) > 4 ? true : false;  
+                        //return (magnitude >= 4) ? true : false;
+                    case '8g': 
+                        return Math.abs(magdiff) > 8 ? true : false;  
+                        //return (magnitude >= 8) ? true : false;                   
+                    case 'tilt x-axis': return (Math.abs(threeDAngles[0]) > 15) ? true : false;
+                    case 'tilt y-axis': return (Math.abs(threeDAngles[1]) > 15) ? true : false;
+                    case 'tilt z-axis': return (Math.abs(threeDAngles[2]) > 15) ? true : false;
+                }
+            }
+        }
+        return false;
+    }
+
     openAccelerometerTilt(args){
-        const accel = this.openAccelerometer({SERIALNUMBER: args.SERIALNUMBER, PORT: args.PORT, CHANNEL: args.CHANNEL, AXIS: 'all'});
+        const accel = this.openAccelerometer({...args, AXIS: 'all'});
         
         if(accel !== 'UNKNOWN'){
             accel[0] = +(accel[0]);
@@ -1319,13 +1494,8 @@ class Scratch3Phidget22Blocks{
     };
 
     openGyroscope(args){
-        const found = this._findIfConnected('Gyroscope', args);
-        if(found === undefined){
-            const gyro = new Gyroscope(this.runtime, args.SERIALNUMBER, args.PORT, args.CHANNEL);
-            gyro.open();
-            this._addToConnectedArray(gyro);
-        }
-        else if(found.getAttached()){
+        const found = this._findIfConnected({NAME: 'Gyroscope', ...args});
+        if(found && found.getAttached()){
             switch(args.AXIS){
                 case 'all':
                     return found.getAngularRate();
@@ -1341,25 +1511,15 @@ class Scratch3Phidget22Blocks{
     };
 
     zeroGyroscope(args){
-        const found = this._findIfConnected('Gyroscope', args);
-        if(found === undefined){
-            const gyro = new Gyroscope(this.runtime, args.SERIALNUMBER, args.PORT, args.CHANNEL);
-            gyro.open();
-            this._addToConnectedArray(gyro);
-        }
-        else if(found.getAttached()){
+        const found = this._findIfConnected({NAME: 'Gyroscope', ...args});
+        if(found && found.getAttached()){
             found.zero();
         }
     }
 
     openMagnetometer(args){
-        const found = this._findIfConnected('Magnetometer', args);
-        if(found === undefined){
-            const magn = new Magnetometer(this.runtime, args.SERIALNUMBER, args.PORT, args.CHANNEL);
-            magn.open();
-            this._addToConnectedArray(magn);
-        }
-        else if(found.getAttached()){
+        const found = this._findIfConnected({NAME: 'Magnetometer', ...args});
+        if(found && found.getAttached()){
             switch(args.AXIS){
                 case 'all':
                     return found.getMagneticField();
@@ -1375,33 +1535,28 @@ class Scratch3Phidget22Blocks{
     };
 
     openThumbstick(args){
-        const found = this._findIfCompositeConnected("Thumbstick Phidget", args);
-        if(found === undefined){
-            const d = this._findCompositeDevice("Thumbstick Phidget", args);
-            if(d !== undefined){
-                const ts = new Thumbstick(this.runtime,  args.SERIALNUMBER, args.PORT);
-                ts.open();
-                this.connectedCompositeDevices.push(ts);
-            }
-        }
-        else if(found.getAttached()){
-            switch(args.CHANNEL){
-                case 'x-axis': return found.data[0];
-                case 'y-axis': return found.data[1];
+        if(args.AXIS === undefined)
+            args.AXIS = 'button';
+        const found = this._findIfConnected({NAME: 'Thumbstick Phidget', ...args});
+        if(found && found.getAttached()){
+            switch(args.AXIS){
+                case 'x-axis': return found.data[1];
+                case 'y-axis': return found.data[0];
                 case 'button': return found.data[2];
             }
         }
+        
         return "UNKNOWN";
     }
 
+    onThumbstickButtonClick(args){
+        const state = this.openThumbstick({...args, AXIS: 'button'});
+        return state === "UNKNOWN" ? false : state;
+    }
+
     openRFID(args){        
-        const found = this._findIfConnected('RFID', {PORT:-1, ...args});
-        if(found === undefined){
-            const rfid = new RFID(this.runtime, args.SERIALNUMBER);
-            rfid.open();
-            this._addToConnectedArray(rfid);
-        }
-        else if(found.getAttached()){
+        const found = this._findIfConnected({NAME:'RFID', PORT:-1, ...args});
+        if(found && found.getAttached()){
             if(found.getTagPresent())
                 return found.getLastTag();
             else
@@ -1410,115 +1565,149 @@ class Scratch3Phidget22Blocks{
         return 'UNKNOWN';
     }
 
-    basicDistanceSensor(){
-        return this.openDistanceSensor({SERIALNUMBER: -1, PORT: -1, CHANNEL: -1,});
+    extensionAdded(e, f, g, h, i){
+        console.log('extension added! ' + e);
     }
-
-    basicHumiditySensor(){
-        return this.openHumiditySensor({SERIALNUMBER: -1, PORT: -1, CHANNEL: -1});
-    }
-
-    basicLightSensor(){
-        return this.openLightSensor({SERIALNUMBER: -1, PORT: -1, CHANNEL: -1});
-    }
-
-    basicPHSensor(){
-        return this.openPHSensor({SERIALNUMBER: -1, PORT: -1, CHANNEL: -1});
-    }
-
-    basicTemperatureSensor(){
-        return this.openTemperatureSensor({SERIALNUMBER: -1, PORT: -1, CHANNEL: -1});
-    }
-
-    basicAccelerometer(args){
-        return this.openAccelerometer({SERIALNUMBER: -1, PORT: -1, CHANNEL: -1, ...args});
-    }
-
-    basicAccelerometerTilt(args){
-        return accel = this.openAccelerometerTilt({SERIALNUMBER: -1, PORT: -1, CHANNEL: -1, ...args});
-    }
-
-    basicAccelerometerIsGesture(args){
-        return this.basicAccelerometerGesture(args);
-    }
-
-    basicAccelerometerGesture(args){
-        const found = this._findIfConnected('Accelerometer', {...args, SERIALNUMBER: -1, PORT: -1, CHANNEL: -1});
-        if(found === undefined){
-            const accel = new Accelerometer(this.runtime, -1, -1, -1);
-            accel.open();
-            this._addToConnectedArray(accel);
-        }
-        else if(found.getAttached()){
-            const accel = found.getAcceleration();
-            if(accel !== 'UNKNOWN'){
-                accel[0] = +(accel[0]);
-                accel[1] = +(accel[1]);
-                accel[2] = +(accel[2]);
-
-                const magnitude = Math.sqrt(accel[0] * accel[0] + accel[1] * accel[1] + accel[2] * accel[2]);
-                //const simpleAngle = [Math.asin(accel[0]) * 180 / Math.PI, Math.asin(accel[1]) * 180 / Math.PI, Math.asin(accel[2]) * 180 / Math.PI];
-                //console.log(simpleangle);
-                const threeDAngles = [Math.atan(accel[0] / Math.sqrt(accel[1] * accel[1] + accel[2] * accel[2])) * 180 / Math.PI, Math.atan(accel[1] / Math.sqrt(accel[0] * accel[0] + accel[2] * accel[2])) * 180 / Math.PI, Math.atan(Math.sqrt(accel[0] * accel[0] + accel[1] * accel[1])/accel[2]) * 180 / Math.PI];
-                //console.log(threeDAngles);
-
-                switch(args.GESTURE){
-                    case '2g': return (magnitude >= 2) ? true : false;
-                    case '4g': return (magnitude >= 4) ? true : false;
-                    case '8g': return (magnitude >= 8) ? true : false;
-                    case 'shake':               
-                        let diff = [found.prevAccel[0] - accel[0], found.prevAccel[1] - accel[1], found.prevAccel[2] - accel[2]];                        
-                        found.prevAccel = accel;
-                        return (diff.find((e) => (Math.abs(e) > 2))) ? true : false;
-                    case 'tilt x-axis': return (Math.abs(threeDAngles[0]) > 15) ? true : false;
-                    case 'tilt y-axis': return (Math.abs(threeDAngles[1]) > 15) ? true : false;
-                    case 'tilt z-axis': return (Math.abs(threeDAngles[2]) > 15) ? true : false;
-                }
-            }
-        }
-        return false;
-    }
-
-    basicZeroGyroscope(args){
-        this.zeroGyroscope({SERIALNUMBER: -1, PORT: -1, CHANNEL: -1, ...args});
-    }
-
-    basicGyroscope(args){
-        return this.openGyroscope({SERIALNUMBER: -1, PORT: -1, CHANNEL: -1, ...args});
-    }
-
-    basicMagnetometer(args){
-        return this.openMagnetometer({SERIALNUMBER: -1, PORT: -1, CHANNEL: -1, ...args});
-    }
-
-    basicThumbstick(args){
-        return this.openThumbstick({SERIALNUMBER: -1, PORT: -1, ...args});
-    }
-
-    basicOnThumbstickButton(){
-        return this.basicThumbstick({CHANNEL: 'button'});
-    }
-
-    basicRFID(){
-            return this.openRFID({SERIALNUMBER: -1});
-    }
+    
 
     onbutton(){
         console.log('i am in a button');
     }
 
-    closeAllPhidgets(){  
+    onStateChange(state, dev, otherargs){
+        console.log('i am testing events: ' + state);
+        console.log(this);
+        return true;
+    }
+
+    onStateChange1(state, dev, otherargs){
+        console.log('i am testing lots events: ' + state);
+        console.log(this);
+    }
+
+    onDigitalInputStateChange(args){
+        console.log(args);
+        if(args)
+            return true;
+        return false;
+    }
+
+    reconnectPhidgets(){  
         while(this.connectedDevices.length > 0) {
             this.connectedDevices[0].close();
             this.connectedDevices.shift();
         }
-        
-        while(this.connectedCompositeDevices.length > 0) {
-            this.connectedCompositeDevices[0].close();
-            this.connectedCompositeDevices.shift();
-        }
 
         console.log("closed all devices");
+        this.projectChanged();
+    }
+
+    projectLoaded(){
+        console.log("project loaded");
+        this.reconnectPhidgets();
+    }
+
+    /*
+     * When the project is changed, check to see what Phidget blocks are still being referenced.  
+     * If the device is no longer being used (last block associated with device is deleted), close the device.
+     * If new device is being used, call open() on it
+    */
+    projectChanged(){
+        //console.log("project changed!");
+        
+        const phidBlocksInfo = this.getInfo().blocks;
+        const connDev = this.connectedDevices.filter(function(value, index, arr) {
+            return value !== undefined;
+        });
+
+        const executableTargets = Object.values(this.runtime.executableTargets);
+        for(const target of executableTargets ){
+            const blocks = Object.values(target.blocks._blocks);
+            if(blocks.length > 0){
+                for(const block of blocks){
+                    if((block.opcode).indexOf('phidget') !== -1){   
+                        const phidblock = phidBlocksInfo.find(phblock => ("phidget22_" + phblock.opcode === block.opcode) );
+                        if(phidblock && phidblock.opcode.indexOf('closeAllPhidgets') === -1)
+                        {  
+                            const serialnumber = block.fields?.SERIALNUMBER?.value ?? "any";
+                            const port = block.fields?.PORT?.value ?? "any";
+                            const channel = block.fields?.CHANNEL?.value ?? "any";
+
+                            const args = {NAME: phidblock.name, SERIALNUMBER: serialnumber, PORT: port, CHANNEL: channel};
+                            const found = this._findIfConnected(args);
+                            
+                            if(found === undefined){
+                                let newphidget;
+                                switch(phidblock.name){
+                                    case 'Accelerometer':
+                                        newphidget = new Accelerometer(serialnumber, port, channel);
+                                        break;
+                                    case 'DigitalInput':
+                                        newphidget = new DigitalInputHubPortDevice(serialnumber, port, channel, this.runtime);
+                                        break;
+                                    case 'DigitalOutput':
+                                        newphidget = new DigitalOutputHubPortDevice(serialnumber, port, channel);                                        
+                                        break;
+                                    case 'DistanceSensor':
+                                        newphidget = new DistanceSensor(serialnumber, port, channel);
+                                        break;
+                                    case 'Gyroscope':
+                                        newphidget = new Gyroscope(serialnumber, port, channel);
+                                        break;
+                                    case 'HumiditySensor':
+                                        newphidget = new HumiditySensor(serialnumber, port, channel);
+                                        break;
+                                    case 'LightSensor':
+                                        newphidget = new LightSensor(serialnumber, port, channel);
+                                        break;
+                                    case 'Magnetometer':
+                                        newphidget = new Magnetometer(serialnumber, port, channel);
+                                        break;
+                                    case 'pHSensor':
+                                        newphidget = new PHSensor(serialnumber, port, channel);
+                                        break;
+                                    case 'TemperatureSensor':
+                                        newphidget = new TemperatureSensor(serialnumber, port, channel);
+                                        break;
+                                    case 'RFID':
+                                        newphidget = new RFID(serialnumber);
+                                        break;
+                                    case 'Thumbstick Phidget':
+                                        newphidget = new Thumbstick(serialnumber, port, this.runtime);
+                                        break;
+                                    default:
+                                        console.log("Open() not implemented for device");
+                                        return;
+                                }
+
+                                newphidget.open();
+                                this.connectedDevices.push(newphidget);
+                                
+                            }
+                            else if(found){       //determine which devices are currently in use
+                                let indexPhidgetToRemove = connDev.indexOf(found);
+                                if(indexPhidgetToRemove !== -1){
+                                    connDev.splice(indexPhidgetToRemove, 1);
+                                }
+                                //console.log("device already connected");
+                            }
+                        }
+                        
+                    }
+                }
+            }
+
+        }
+
+        //close these devices since they are no longer being referenced in active blocks
+        //console.log(connDev);
+        for(const phid of connDev){
+            const phidIndex = this.connectedDevices.indexOf(phid);
+            if(phidIndex !== -1){
+                this.connectedDevices[phidIndex].close();
+                this.connectedDevices.splice(phidIndex, 1);
+            }
+        }
     }
 }
 
