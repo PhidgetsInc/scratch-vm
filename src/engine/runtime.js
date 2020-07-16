@@ -1168,7 +1168,7 @@ class Runtime extends EventEmitter {
             }
         }
 
-        if (blockInfo.blockType === BlockType.REPORTER) {
+        if (blockInfo.blockType === BlockType.REPORTER || blockInfo.blockType === BlockType.BOOLEAN) {
             blockJSON.checkboxInFlyout = true;
             // if (!blockInfo.disableMonitor && context.inputList.length === 0) {
             //     blockJSON.checkboxInFlyout = true;
@@ -2484,7 +2484,14 @@ class Runtime extends EventEmitter {
         // TODO: we may want to format the label in a locale-specific way.
         return {
             category: 'extension', // This assumes that all extensions have the same monitor color.
-            label: `${categoryInfo.name}: ${block.info.text}`
+            label: `${categoryInfo.name}: ${block.info.text}`,
+            labelFn: (params) => {
+                let label = block.info.text;
+                Object.entries(params).forEach(([key, value]) => {
+                    label = label.replace("[" + key + "]", value);
+                });
+                return `${categoryInfo.name}: ${label}`;
+            },
         };
     }
 
