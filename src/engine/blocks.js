@@ -326,6 +326,7 @@ class Blocks {
         }
         case 'change':
             this.changeBlock({
+                flyout: e.getEventWorkspace_()?.options?.parentWorkspace?.getFlyout(), //required to change checkbox state
                 id: e.blockId,
                 element: e.element,
                 name: e.name,
@@ -575,7 +576,6 @@ class Blocks {
             // 3. the checkbox should become unchecked if we're not already
             //    monitoring current minute
 
-
             // Update block value
             if (!block.fields[args.name]) return;
             if (args.name === 'VARIABLE' || args.name === 'LIST' ||
@@ -589,6 +589,13 @@ class Blocks {
             } else {
                 // Changing the value in a dropdown
                 block.fields[args.name].value = args.value;
+
+                //update checkbox in flyout based on monitored parameter
+                const newId = getMonitorIdForBlockWithArgs(block.id, block.fields);
+                const newBlock = this.runtime.monitorBlocks.getBlock(newId);
+                const newBlock_checked = newBlock?.isMonitored || false;                
+                args.flyout?.setCheckboxState(block.id, newBlock_checked);
+                args.flyout.DEFAULT_WIDTH = 700;
 
                 // The selected item in the sensing of block menu needs to change based on the
                 // selected target.  Set it to the first item in the menu list.
