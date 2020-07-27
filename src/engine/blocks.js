@@ -595,7 +595,6 @@ class Blocks {
                 const newBlock = this.runtime.monitorBlocks.getBlock(newId);
                 const newBlock_checked = newBlock?.isMonitored || false;                
                 args.flyout?.setCheckboxState(block.id, newBlock_checked);
-                args.flyout.DEFAULT_WIDTH = 700;
 
                 // The selected item in the sensing of block menu needs to change based on the
                 // selected target.  Set it to the first item in the menu list.
