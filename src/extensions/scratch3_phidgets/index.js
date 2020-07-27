@@ -1,7 +1,6 @@
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const formatMessage = require('format-message');
-//const BlockUtility = require('../../engine/block-utility');
 //const $ = require('jquery');
 //const phidget22 = require('phidget22'); 
 // require('./phidget22.min.js');
@@ -24,13 +23,7 @@ class Phidget{
         return this.dev.isattached;
     }
 
-    open(){
-        this.dev.open().catch(function(){
-            console.log('error opening device');
-        });
-    }
-
-    open(timeout){
+    open(timeout = 0){
         this.dev.open(timeout).catch(function(){
             console.log('Device did not open within timeout');
         })
@@ -470,7 +463,7 @@ class Scratch3Phidget22Blocks{
         this.newDevice;     
         
         
-        const conn_opts = { name: "PhidgetServer", passwd: "",  onConnect: this._onConnect };
+        const conn_opts = { name: "PhidgetServer", passwd: "",  onConnect: this._onConnect.bind(this) };
 
         const hostname = (window.location?.hostname === undefined || window.location.hostname === "" || window.location.hostname === "wwwdev" || window.location.hostname === "192.168.3.155") ? "localhost" : window.location.hostname;
         const port = (window.location.port === '' || window.location.port === '8601') ? 8989 : parseInt(window.location.port);
@@ -500,12 +493,10 @@ class Scratch3Phidget22Blocks{
 
         this.phidmanager.open();        
         
-        //this.runtime.on('PROJECT_STOP_ALL', this.closeAllPhidgets.bind(this));    //causes problems when clicking the green flag...
+        //this.runtime.on('PROJECT_STOP_ALL', this.reconnectPhidgets.bind(this));    //causes problems when clicking the green flag...
         this.runtime.on('PROJECT_CHANGED', this.projectChanged.bind(this));
         this.runtime.on('PROJECT_LOADED', this.projectLoaded.bind(this));
         this.runtime.on('PROJECT_START', this.projectChanged.bind(this));
-        //this.runtime.on('MONITORS_UPDATE', this.monitorsUpdate.bind(this));
-        this.runtime.on('EXTENSION_ADDED', this.extensionAdded);
 
         //this.runtime.on('onStateChange', this.onStateChange.bind(this));
     };  
@@ -529,7 +520,7 @@ class Scratch3Phidget22Blocks{
                 default: 'Phidgets',
                 description: 'Name of extension that adds Phidget blocks'
             }),
-            
+
             blockIconURI: blockIconURI,
             menuIconURI: menuIconURI,
     
@@ -541,10 +532,16 @@ class Scratch3Phidget22Blocks{
             // code to enable Reporter-watcher for reporters with arguments is in runtime.js, uncomment line 1172 and comment out lines 1173-1175
             blocks: [
                 {
+                    func: 'onbutton',
+                    blockType: BlockType.BUTTON,
+                    text: 'Debug Blocks',
+                    //hideFromPalette: true,
+                },
+                {
                     opcode: 'reconnectPhidgets',
                     blockType: BlockType.COMMAND,
                     text: 'Reconnect Phidgets',
-                    hideFromPalette: true,
+                    //hideFromPalette: true,
                 },
                 {
                     func: 'onbutton',
@@ -577,7 +574,8 @@ class Scratch3Phidget22Blocks{
                     func: 'openPHSensor',
                     blockType: BlockType.REPORTER,
                     text: 'pHSensor (pH)',
-                    name: 'PHSensor'
+                    name: 'PHSensor',
+                    hideFromPalette: true,
                 },
                 {
                     opcode: 'basicTemperatureSensor',
@@ -890,6 +888,7 @@ class Scratch3Phidget22Blocks{
                     blockType: BlockType.REPORTER,
                     text: 'pHSensor (pH) SN: [SERIALNUMBER] Port: [PORT]',
                     name: 'PHsensor',
+                    hideFromPalette: true,
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -1181,7 +1180,7 @@ class Scratch3Phidget22Blocks{
                     blockType: BlockType.EVENT,
                     text: 'DigitalInput SN: [SERIALNUMBER] Port: [PORT] onStateChangeEVENT: [STATE]',
                     name: 'DigitalInput',
-                    hideFromPalette: false,
+                    hideFromPalette: true,
                     arguments:{
                         SERIALNUMBER: {
                             type: ArgumentType.STRING,
@@ -1312,7 +1311,7 @@ class Scratch3Phidget22Blocks{
     _findIfConnected(args){
         const serialnumber = (args.SERIALNUMBER === undefined || (args.SERIALNUMBER === 'any') ? -1 : parseInt(args.SERIALNUMBER));
         const port = ((args.PORT === undefined || args.PORT === 'any') ? -1 : parseInt(args.PORT));
-        const channel = ((args.CHANNEL === undefined || args.CHANNEL === 'any') ? -1: parseInt(args.CHANNEL));
+        const channel = ((args.CHANNEL === undefined || args.CHANNEL === 'any') ? -1 : parseInt(args.CHANNEL));
 
         return this.connectedDevices.find((e) => 
             (
@@ -1327,10 +1326,10 @@ class Scratch3Phidget22Blocks{
                 ((e.dev.name === args.NAME) && (e.dev._serialNumber === serialnumber) && (e.dev._hubPort === port))
             )
         );
-    }
+    };
 
     getAvailableDevices(){
-        const serialNumbers = ["any"];
+        const serialNumbers = [{text: "any", value: "-1"}];
         this.availableDevices.map((dev) => {
             const serialnum = serialNumbers.find( (sn) => (dev.device.serialNumber.toString() === sn));
             if( serialnum === undefined){
@@ -1338,6 +1337,8 @@ class Scratch3Phidget22Blocks{
             }
         });
 
+        if(serialNumbers.length === 0)
+            return [""];
         return serialNumbers;
     };
 
@@ -1356,7 +1357,7 @@ class Scratch3Phidget22Blocks{
         if(found && found.getAttached()){
             return found.getState();
         }
-        return 'UNKNOWN';
+        return '';
     };
 
     setDigitalOutputState(args){
@@ -1371,7 +1372,7 @@ class Scratch3Phidget22Blocks{
         if(found && found.getAttached()){
             return found.getState() === 1;
         }
-        return 'UNKNOWN';
+        return '';
     };
 
     openDistanceSensor(args){
@@ -1379,7 +1380,7 @@ class Scratch3Phidget22Blocks{
         if(found && found.getAttached()){
             return found.getDistance();
         }
-        return 'UNKNOWN';
+        return '';
     };
 
     openLightSensor(args){
@@ -1387,7 +1388,7 @@ class Scratch3Phidget22Blocks{
         if(found && found.getAttached()){
             return found.getIlluminance();
         }
-        return 'UNKNOWN';
+        return '';
     };
 
     openHumiditySensor(args){        
@@ -1395,7 +1396,7 @@ class Scratch3Phidget22Blocks{
          if(found && found.getAttached()){
             return found.getHumidity();
         }
-        return 'UNKNOWN';
+        return '';
     };
 
     openPHSensor(args){
@@ -1403,7 +1404,7 @@ class Scratch3Phidget22Blocks{
          if(found && found.getAttached()){
             return found.getPH();
         }
-        return 'UNKNOWN';
+        return '';
     };
 
     openTemperatureSensor(args){
@@ -1411,14 +1412,14 @@ class Scratch3Phidget22Blocks{
         if(found && found.getAttached()){
             return found.getTemperature();
         }
-        return 'UNKNOWN';
+        return '';
     };
 
     openAccelerometer(args){
         const found = this._findIfConnected({NAME: 'Accelerometer', ...args});
         if(found && found.getAttached()){
             const accel = found.getAcceleration();
-            if(accel !== 'UNKNOWN'){
+            if(accel !== undefined){
                 switch(args.AXIS){
                     case 'all': return accel;
                     case 'x-axis': return accel[0];
@@ -1428,14 +1429,14 @@ class Scratch3Phidget22Blocks{
                 }
             }
         }
-        return 'UNKNOWN';
+        return '';
     };
 
     getAccelerometerGesture(args){
         const found = this._findIfConnected({NAME: 'Accelerometer', ...args});
         if(found && found.getAttached()){
             const accel = found.getAcceleration();
-            if(accel !== 'UNKNOWN'){
+            if(accel !== undefined){
                 accel[0] = +(accel[0]);
                 accel[1] = +(accel[1]);
                 accel[2] = +(accel[2]);
@@ -1475,11 +1476,11 @@ class Scratch3Phidget22Blocks{
     openAccelerometerTilt(args){
         const accel = this.openAccelerometer({...args, AXIS: 'all'});
         
-        if(accel !== 'UNKNOWN'){
+        if(accel !== undefined){
             accel[0] = +(accel[0]);
             accel[1] = +(accel[1]);
             accel[2] = +(accel[2]);
-;
+
             const threeDAngles = [Math.atan(accel[0] / Math.sqrt(accel[1] * accel[1] + accel[2] * accel[2])) * 180 / Math.PI, Math.atan(accel[1] / Math.sqrt(accel[0] * accel[0] + accel[2] * accel[2])) * 180 / Math.PI, Math.atan(Math.sqrt(accel[0] * accel[0] + accel[1] * accel[1])/accel[2]) * 180 / Math.PI];
             //console.log(threeDAngles);
 
@@ -1490,7 +1491,7 @@ class Scratch3Phidget22Blocks{
                 case 'z-axis':  return threeDAngles[2];
             }
         }
-        return 'UNKNOWN';
+        return '';
     };
 
     openGyroscope(args){
@@ -1507,7 +1508,7 @@ class Scratch3Phidget22Blocks{
                     return found.getAngularRate()[2];
             }
         }
-        return 'UNKNOWN';
+        return '';
     };
 
     zeroGyroscope(args){
@@ -1531,7 +1532,7 @@ class Scratch3Phidget22Blocks{
                     return found.getMagneticField()[2];
             }
         }
-        return 'UNKNOWN';
+        return '';
     };
 
     openThumbstick(args){
@@ -1546,12 +1547,12 @@ class Scratch3Phidget22Blocks{
             }
         }
         
-        return "UNKNOWN";
+        return '';
     }
 
     onThumbstickButtonClick(args){
         const state = this.openThumbstick({...args, AXIS: 'button'});
-        return state === "UNKNOWN" ? false : state;
+        return state === '' ? false : state;
     }
 
     openRFID(args){        
@@ -1562,13 +1563,8 @@ class Scratch3Phidget22Blocks{
             else
                 return '';
         }
-        return 'UNKNOWN';
+        return '';
     }
-
-    extensionAdded(e, f, g, h, i){
-        console.log('extension added! ' + e);
-    }
-    
 
     onbutton(){
         console.log('i am in a button');
@@ -1619,6 +1615,7 @@ class Scratch3Phidget22Blocks{
         const connDev = this.connectedDevices.filter(function(value, index, arr) {
             return value !== undefined;
         });
+        const devToOpen = [];
 
         const executableTargets = Object.values(this.runtime.executableTargets);
         for(const target of executableTargets ){
@@ -1627,7 +1624,7 @@ class Scratch3Phidget22Blocks{
                 for(const block of blocks){
                     if((block.opcode).indexOf('phidget') !== -1){   
                         const phidblock = phidBlocksInfo.find(phblock => ("phidget22_" + phblock.opcode === block.opcode) );
-                        if(phidblock && phidblock.opcode.indexOf('closeAllPhidgets') === -1)
+                        if(phidblock)
                         {  
                             const serialnumber = block.fields?.SERIALNUMBER?.value ?? "any";
                             const port = block.fields?.PORT?.value ?? "any";
@@ -1680,8 +1677,7 @@ class Scratch3Phidget22Blocks{
                                         return;
                                 }
 
-                                newphidget.open();
-                                this.connectedDevices.push(newphidget);
+                                devToOpen.push(newphidget);     //keep track of these, and open at the very end
                                 
                             }
                             else if(found){       //determine which devices are currently in use
@@ -1689,14 +1685,11 @@ class Scratch3Phidget22Blocks{
                                 if(indexPhidgetToRemove !== -1){
                                     connDev.splice(indexPhidgetToRemove, 1);
                                 }
-                                //console.log("device already connected");
                             }
-                        }
-                        
+                        }                        
                     }
                 }
             }
-
         }
 
         //close these devices since they are no longer being referenced in active blocks
@@ -1708,6 +1701,11 @@ class Scratch3Phidget22Blocks{
                 this.connectedDevices.splice(phidIndex, 1);
             }
         }
+
+        for(const phid of devToOpen){
+            phid.open();
+            this.connectedDevices.push(phid);
+        }        
     }
 }
 
